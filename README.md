@@ -23,7 +23,7 @@ Choose the audio output with `LIBRESPOT_DEVICE`. List the available devices with
 | Output | Example |
 | --- | --- |
 | 3.5mm jack | `LIBRESPOT_DEVICE="hw:CARD=Headphones,DEV=0"` |
-| HDMI | `LIBRESPOT_DEVICE="hw:CARD=vc4hdmi0,DEV=0"` |
+| HDMI | `LIBRESPOT_DEVICE="hdmi:CARD=vc4hdmi0,DEV=0"` (not `hw:`, which fails with error 524 on Pi 4/5) |
 | USB speaker / DAC | `LIBRESPOT_DEVICE="hw:CARD=<name from aplay -L>,DEV=0"` |
 | Bluetooth | Pair it with `bluetoothctl`, install `bluez-alsa-utils`, then `LIBRESPOT_DEVICE="bluealsa:DEV=<MAC>,PROFILE=a2dp"` |
 
