@@ -47,6 +47,8 @@ class SpotifyPlayer:
                 self._client.start_playback(device_id=device_id, uris=[media.uri])
             else:
                 self._client.start_playback(device_id=device_id, context_uri=media.uri)
+            self._client.shuffle(False, device_id=device_id)
+            self._client.repeat("off", device_id=device_id)
         except (spotipy.SpotifyBaseException, requests.RequestException) as error:
             raise PlaybackError(f"Could not play {media.uri}: {error}") from error
 

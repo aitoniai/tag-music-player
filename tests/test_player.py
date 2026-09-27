@@ -22,12 +22,16 @@ def test_plays_track_as_uri_list(client):
     SpotifyPlayer(client, "tag-music-player").play(SpotifyMedia(MediaKind.TRACK, "abc"))
 
     client.start_playback.assert_called_once_with(device_id="pi-id", uris=["spotify:track:abc"])
+    client.shuffle.assert_called_once_with(False, device_id="pi-id")
+    client.repeat.assert_called_once_with("off", device_id="pi-id")
 
 
 def test_plays_playlist_as_context(client):
     SpotifyPlayer(client, "tag-music-player").play(SpotifyMedia(MediaKind.PLAYLIST, "xyz"))
 
     client.start_playback.assert_called_once_with(device_id="pi-id", context_uri="spotify:playlist:xyz")
+    client.shuffle.assert_called_once_with(False, device_id="pi-id")
+    client.repeat.assert_called_once_with("off", device_id="pi-id")
 
 
 def test_missing_device_raises(client):
