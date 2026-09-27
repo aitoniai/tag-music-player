@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "Play Spotify music on a Raspberry Pi from NFC tags"
 requires-python = ">=3.11"
 dependencies = [
+    "requests>=2",
     "spotipy>=2.24",
     "python-dotenv>=1.0",
 ]
