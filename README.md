@@ -12,11 +12,14 @@ The Pi runs [raspotify](https://github.com/dtcooper/raspotify), which makes it a
 curl -sL https://dtcooper.github.io/raspotify/install.sh | sh
 ```
 
-Edit `/etc/raspotify/conf` and set the speaker name:
+Edit `/etc/raspotify/conf` to set the speaker name and turn off autoplay:
 
 ```sh
 LIBRESPOT_NAME="tag-music-player"
+LIBRESPOT_AUTOPLAY="off"
 ```
+
+With autoplay `off`, playback stops when the song, album or playlist finishes. With `on`, Spotify carries on with suggested music. The app always turns repeat and shuffle off when it starts playing, so every link plays once, in order.
 
 Choose the audio output with `LIBRESPOT_DEVICE`. List the available devices with `aplay -L`.
 

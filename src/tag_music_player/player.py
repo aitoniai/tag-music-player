@@ -6,7 +6,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 from tag_music_player.config import Settings
-from tag_music_player.media import SpotifyMedia
+from tag_music_player.media import MediaKind, SpotifyMedia
 
 log = logging.getLogger(__name__)
 
@@ -45,10 +45,21 @@ class SpotifyPlayer:
             log.info("Playing %s on %s", media.uri, self._device_name)
             if media.is_single_item:
                 self._client.start_playback(device_id=device_id, uris=[media.uri])
+            elif media.kind in (MediaKind.ALBUM, MediaKind.PLAYLIST):
+                # Start at the first track even if shuffle was left on.
+                self._client.start_playback(device_id=device_id, context_uri=media.uri, offset={"position": 0})
             else:
                 self._client.start_playback(device_id=device_id, context_uri=media.uri)
         except (spotipy.SpotifyBaseException, requests.RequestException) as error:
             raise PlaybackError(f"Could not play {media.uri}: {error}") from error
+        self._play_once_in_order(device_id)
+
+    def _play_once_in_order(self, device_id: str) -> None:
+        try:
+            self._client.shuffle(False, device_id=device_id)
+            self._client.repeat("off", device_id=device_id)
+        except (spotipy.SpotifyBaseException, requests.RequestException) as error:
+            log.warning("Playing, but could not turn off shuffle/repeat: %s", error)
 
     def _find_device_id(self) -> str:
         devices = self._client.devices()["devices"]

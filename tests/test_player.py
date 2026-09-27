@@ -22,12 +22,41 @@ def test_plays_track_as_uri_list(client):
     SpotifyPlayer(client, "tag-music-player").play(SpotifyMedia(MediaKind.TRACK, "abc"))
 
     client.start_playback.assert_called_once_with(device_id="pi-id", uris=["spotify:track:abc"])
+    client.shuffle.assert_called_once_with(False, device_id="pi-id")
+    client.repeat.assert_called_once_with("off", device_id="pi-id")
 
 
 def test_plays_playlist_as_context(client):
     SpotifyPlayer(client, "tag-music-player").play(SpotifyMedia(MediaKind.PLAYLIST, "xyz"))
 
-    client.start_playback.assert_called_once_with(device_id="pi-id", context_uri="spotify:playlist:xyz")
+    client.start_playback.assert_called_once_with(
+        device_id="pi-id", context_uri="spotify:playlist:xyz", offset={"position": 0}
+    )
+    client.shuffle.assert_called_once_with(False, device_id="pi-id")
+    client.repeat.assert_called_once_with("off", device_id="pi-id")
+
+
+def test_plays_album_from_first_track(client):
+    SpotifyPlayer(client, "tag-music-player").play(SpotifyMedia(MediaKind.ALBUM, "alb"))
+
+    client.start_playback.assert_called_once_with(
+        device_id="pi-id", context_uri="spotify:album:alb", offset={"position": 0}
+    )
+
+
+def test_plays_artist_without_offset(client):
+    SpotifyPlayer(client, "tag-music-player").play(SpotifyMedia(MediaKind.ARTIST, "art"))
+
+    client.start_playback.assert_called_once_with(device_id="pi-id", context_uri="spotify:artist:art")
+
+
+def test_shuffle_repeat_error_does_not_fail_playback(client, caplog):
+    client.repeat.side_effect = SpotifyException(502, -1, "Bad gateway")
+
+    SpotifyPlayer(client, "tag-music-player").play(SpotifyMedia(MediaKind.TRACK, "abc"))
+
+    client.start_playback.assert_called_once()
+    assert "Bad gateway" in caplog.text
 
 
 def test_missing_device_raises(client):
